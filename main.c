@@ -95,56 +95,56 @@ int FindPassword(MPI_File *input, char* pass,int length, const int rank, const i
 //*****************************************************************************************
 int main(int argc, char **argv) {
 
-	//Declare the MPI File variable
+    //Declare the MPI File variable
     MPI_File input;
 	
-	//Declare the rank(id of process) and size (total processes)
+    //Declare the rank(id of process) and size (total processes)
     int rank, size;
 	
-	//Declare the error code
+    //Declare the error code
     int error_code;
 	
-	//And the characte overlap
+    //And the characte overlap
     const int olap = 100;
 	
-	//Init MPI and fetch the input arguments
+    //Init MPI and fetch the input arguments
     MPI_Init(&argc, &argv);
 	
-	//Init the rank according to arguments
+    //Init the rank according to arguments
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	
-	//Init the size according to arguments
+    //Init the size according to arguments
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 	
-	//Open the file via MPI and deal with any errors
+    //Open the file via MPI and deal with any errors
     error_code = MPI_File_open(MPI_COMM_WORLD, "passwords.txt", MPI_MODE_RDONLY, MPI_INFO_NULL, &input);
     if (error_code) {
         if (rank == 0) 
-	   		fprintf(stderr, "%s: Can't Open the Password File: %s\n", argv[0], argv[1]);
+		fprintf(stderr, "%s: Can't Open the Password File: %s\n", argv[0], argv[1]);
         MPI_Finalize();
         exit(2);
     }//close if
 
-	//Setting a hardcoded password to search for
+    //Setting a hardcoded password to search for
     char * pass = "dobies"; int length = 6;
 	
-	//Start recording time
+    //Start recording time
     clock_t t = clock();
 	
-	//Find the password
+    //Find the password
     int success = FindPassword(&input, pass,length, rank, size, olap);
     
-	//Calculate time taken
-	t = clock() - t;
+    //Calculate time taken
+    t = clock() - t;
     
-	//If successful then print the time taken
+    //If successful then print the time taken
     if(success == 1)
-		printf("Time Taken: %f\n",(float)t/CLOCKS_PER_SEC);
+	printf("Time Taken: %f\n",(float)t/CLOCKS_PER_SEC);
     
-	//Close the MPI file
+    //Close the MPI file
     MPI_File_close(&input);
 
-	//Terminate all the processes systematically via MPI Finalize
+    //Terminate all the processes systematically via MPI Finalize
     MPI_Finalize();
 	
     return 0;
